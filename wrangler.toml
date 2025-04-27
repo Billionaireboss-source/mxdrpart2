@@ -1,0 +1,26 @@
+name = "mxdr-prospector" # Change to your desired project name in Cloudflare
+pages_build_output_dir = "dist"
+compatibility_date = "2024-04-05"
+
+# Configuration for Pages Functions
+[functions]
+# This tells Pages where the compiled Worker code is relative to the build output dir
+# Since our worker source is in `functions/` and vite builds to `dist/`,
+# we might need to adjust depending on the final build structure.
+# Cloudflare Pages often automatically detects the `functions` dir at the root.
+# Let's rely on the convention that Pages finds the `functions` directory.
+
+# [[kv_namespaces]]
+# binding = "MY_KV_NAMESPACE"
+# id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "my-database"
+# database_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+
+# Environment variables for Functions
+# Define secrets using `wrangler secret put GEMINI_API_KEY`
+# You can define non-secret vars here if needed.
+# [vars]
+# MY_VAR = "some_value"
