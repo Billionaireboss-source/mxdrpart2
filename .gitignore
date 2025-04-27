@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Build artifacts
+dist/
+.wrangler/
+*.tsbuildinfo
+
+# Environment variables
+.env*
+!.env.example
+
+# IDE/OS files
+.DS_Store
+*.pem
+*.log
+*.key
+*.sublime-*
+
+# Vite
+/public/hot-update.json
