@@ -1,0 +1,107 @@
+# MXDR Prospect Analyzer (Cloudflare Pages + Workers)
+
+This is a simple SaaS tool deployed on Cloudflare Pages that takes a company website URL, attempts to scrape basic public information, and uses the Google Gemini API to:
+
+1.  Assess the company's potential fit for MXDR (Managed Extended Detection and Response) services.
+2.  Generate personalized cold outreach and follow-up email sequences.
+3.  Generate a sales call battlecard with talking points and questions.
+
+**Disclaimer:** Web scraping is inherently unreliable and may be blocked by target websites or fail due to website structure changes or JavaScript rendering. The analysis quality depends heavily on the scraped data and the Gemini API's interpretation based on the provided prompt.
+
+## Tech Stack
+
+*   **Frontend:** React (Vite + TypeScript)
+*   **Backend:** Cloudflare Workers (TypeScript, itty-router)
+*   **Scraping:** `fetch` API + `cheerio` (for basic HTML parsing)
+*   **AI Analysis:** Google Gemini API
+*   **Deployment:** Cloudflare Pages
+
+## Project Structure
+
+```
+/
+├── functions/              # Cloudflare Functions (Backend: /api/analyze)
+├── public/                 # Static assets (index.html)
+├── src/                    # React Frontend Source
+├── .gitignore
+├── package.json            # Dependencies & Scripts
+├── README.md               # This file
+├── tsconfig.json           # TS config for frontend
+├── vite.config.ts        # Vite config
+└── wrangler.toml           # Cloudflare Wrangler config
+```
+
+## Setup Instructions
+
+1.  **Prerequisites:**
+    *   Node.js (v18 or later recommended)
+    *   npm (or pnpm/yarn)
+    *   Cloudflare Account
+    *   Wrangler CLI installed globally (`npm install -g wrangler`) or use `npx wrangler`
+    *   Google Gemini API Key ([Get one here](https://ai.google.dev/))
+
+2.  **Clone the Repository:**
+    ```bash
+    git clone <your-repo-url>
+    cd mxdr-prospector
+    ```
+
+3.  **Install Dependencies:**
+    ```bash
+    npm install
+    # or pnpm install / yarn install
+    ```
+
+4.  **Set Up Google Gemini API Key:**
+    *   Log in to your Cloudflare dashboard.
+    *   Navigate to your Pages project settings (you'll create the project during the first deploy).
+    *   Go to `Settings` -> `Functions` -> `Environment Variables`.
+    *   Under **Production** and **Preview** bindings, add a **Secret** variable:
+        *   Variable name: `GEMINI_API_KEY`
+        *   Value: Paste your Google Gemini API Key here.
+        *   **Important:** Encrypt the secret key!
+
+5.  **Local Development (Optional):**
+    *   **Run the Worker:** Open a terminal and run:
+        ```bash
+        npm run worker:dev
+        # This starts the worker locally, usually on http://localhost:8788
+        ```
+    *   **Run the Frontend:** Open *another* terminal and run:
+        ```bash
+        npm run frontend:dev
+        # This starts the Vite dev server, usually on http://localhost:5173
+        ```
+    *   Open `http://localhost:5173` in your browser. The frontend will proxy API requests (`/api/analyze`) to the local worker thanks to the `vite.config.ts` setup.
+    *   **Note:** For the local worker to use the API key, you might need to create a `.dev.vars` file in the root directory:
+        ```ini
+        # .dev.vars (add this file to .gitignore if you create it!)
+        GEMINI_API_KEY="YOUR_API_KEY_HERE"
+        ```
+        Then run `wrangler dev functions/api/analyze.ts --local --vars .dev.vars`. **Do not commit `.dev.vars` containing secrets.** Using Cloudflare secrets is recommended even for preview deployments.
+
+## Deployment to Cloudflare Pages
+
+1.  **Login to Wrangler:**
+    ```bash
+    wrangler login
+    ```
+
+2.  **Deploy:**
+    *   Make sure your `GEMINI_API_KEY` secret is configured in the Cloudflare dashboard for your Pages project (you might need to deploy once first to create the project).
+    *   Run the deploy script from the project root:
+        ```bash
+        npm run deploy
+        ```
+    *   This command first builds the React frontend (`npm run frontend:build`) into the `dist/` directory, then uses `wrangler pages deploy ./dist` to upload the static site and the function code found in the `functions/` directory.
+    *   Wrangler will guide you through creating a new Pages project if it doesn't exist or updating an existing one.
+
+3.  **Access Your App:** Wrangler will output the URL of your deployed application (e.g., `https://your-project-name.pages.dev`).
+
+## Important Considerations
+
+*   **Scraping Limitations:** This tool uses very basic HTML scraping. It will fail on sites requiring JavaScript, complex logins, or having anti-bot measures. Results will vary drastically between websites.
+*   **Gemini Prompt:** The prompt in `functions/api/analyze.ts` (`callGeminiApi` function) is crucial. You should customize it heavily to improve the quality and relevance of the generated content based on your specific MXDR product and sales strategy.
+*   **Error Handling:** Basic error handling is included, but can be improved (e.g., more specific error messages, retry logic for flaky scraping/API calls).
+*   **Cost & Rate Limits:** Be mindful of Google Gemini API costs and rate limits, especially if this tool is used frequently. Also, aggressive scraping can get your Cloudflare Worker's IP address blocked by target sites.
+*   **Security:** Ensure your `GEMINI_API_KEY` is *always* handled as a secret and never exposed in your code or repository.
