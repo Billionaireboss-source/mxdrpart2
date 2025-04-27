@@ -1,0 +1,32 @@
+{
+  "name": "mxdr-prospector",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "frontend:dev": "vite",                     # Run frontend locally
+    "frontend:build": "tsc && vite build",      # Build frontend for production
+    "frontend:preview": "vite preview",         # Preview production build locally
+    "worker:dev": "wrangler dev functions/api/analyze.ts --local", # Run worker locally (requires separate terminal)
+    "deploy": "npm run frontend:build && wrangler pages deploy ./dist" # Build frontend and deploy Pages (incl. functions)
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240403.0",
+    "@types/react": "^18.2.79",
+    "@types/react-dom": "^18.2.25",
+    "@typescript-eslint/eslint-plugin": "^7.6.0",
+    "@typescript-eslint/parser": "^7.6.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "cheerio": "^1.0.0-rc.12",           # For HTML parsing in worker
+    "eslint": "^8.57.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.6",
+    "itty-router": "^4.0.23",            # Router for worker
+    "typescript": "^5.4.5",
+    "vite": "^5.2.8",
+    "wrangler": "^3.47.0"                # Cloudflare CLI
+  }
+}
