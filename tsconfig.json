@@ -1,0 +1,27 @@
+// mxdr-prospector/tsconfig.json
+{
+  "compilerOptions": {
+    "target": "ES2020", // Target modern JavaScript features
+    "useDefineForClassFields": true, // Use standard class fields definition behavior
+    "lib": ["ES2020", "DOM", "DOM.Iterable"], // Standard libraries available
+    "module": "ESNext", // Use modern ES modules
+    "skipLibCheck": true, // Skip type checking of declaration files in node_modules
+
+    /* Bundler mode */
+    "moduleResolution": "bundler", // Recommended module resolution for Vite/modern bundlers
+    "allowImportingTsExtensions": true, // Allows importing .ts files (needed for bundler resolution)
+    "resolveJsonModule": true, // Allows importing .json files
+    "isolatedModules": true, // Ensures each file can be transpiled independently (required by Vite)
+    "noEmit": true, // Do not emit JS files, Vite handles this. TypeScript is for type checking only.
+    "jsx": "react-jsx", // Use the modern React JSX transform (no React import needed in every file)
+
+    /* Linting */
+    "strict": true, // Enable all strict type-checking options (recommended)
+    "noUnusedLocals": true, // Report errors on unused local variables
+    "noUnusedParameters": true, // Report errors on unused parameters
+    "noFallthroughCasesInSwitch": true, // Report errors for fallthrough cases in switch statements
+    "forceConsistentCasingInFileNames": true // Ensure file references use consistent casing
+  },
+  "include": ["src"], // Only include files in the src directory for compilation/checking
+  "references": [{ "path": "./tsconfig.node.json" }] // Optional: Reference a separate config for Node-specific code (like vite.config.ts) if needed
+}
